@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+require 'optparse'
+
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: "
+  options[:verbose] = false
+  opts.on('-e', '--extract', 'Extract the files') do 
+    options[:extract] = true
+  end
+
+  opts.on('-r', '--repair', 'Repair the files') do
+    options[:repair] = true
+  end
+  
+  options[:dir] = "."
+  opts.on('-d', '--dir DIR', 'Extract to the destination folder') do |destination|
+    options[:dir] = destination
+  end
+end
+
+optparse.parse!
+
+if options[:repair]
+  par_files = `ls | grep .par2 | grep -Ev .*vol.*`.split("\n")
+  par_files.each do |file|
+    puts "Running #{file} through par2..."
+    `par2repair #{file}`
+  end
+end
+
+if options[:extract]
+  rar_files = `ls | grep .rar`.split("\n")
+  rar_files.each do |file|
+    puts "Extracting #{file}"
+    `unrar e #{file} #{options[:dir]}`
+  end
+end
