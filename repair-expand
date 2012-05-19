@@ -9,6 +9,10 @@ optparse = OptionParser.new do |opts|
     options[:extract] = true
   end
 
+  opts.on('-p', '--parts', 'All files end in .rar, parase by parts') do
+    options[:parts] = true
+  end
+
   opts.on('-r', '--repair', 'Repair the files') do
     options[:repair] = true
   end
@@ -31,6 +35,7 @@ end
 
 if options[:extract]
   rar_files = `ls | grep .rar`.split("\n")
+  rar_files = `ls | grep part01.rar`.split("\n") if options[:parts]
   rar_files.each do |file|
     puts "Extracting #{file}"
     `unrar e #{file} #{options[:dir]}`
